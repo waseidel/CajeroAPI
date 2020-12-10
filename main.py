@@ -1,11 +1,12 @@
-from db.user_db import UserInDB
-from db.user_db import update_user, get_user
-from db.transaction_db import TransactionInDB
-from db.transaction_db import save_transaction
-from models.user_models import UserIn, UserOut
-from models.transaction_models import TransactionIn, TransactionOut
 import datetime
+
 from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
+
+from cajero_api.db.transaction_db import TransactionInDB, save_transaction
+from cajero_api.db.user_db import UserInDB, get_user, update_user
+from cajero_api.models.transaction_models import TransactionIn, TransactionOut
+from cajero_api.models.user_models import UserIn, UserOut
 
 api = FastAPI()
 
@@ -56,3 +57,13 @@ async def make_transaction(transaction_in: TransactionIn):
     transaction_out = TransactionOut(**transaction_in_db.dict())
 
     return  transaction_out
+
+
+origins = [
+    "http://localhost.tiangolo.com", "https://localhost.tiangolo.com",
+    "http://localhost", "http://localhost:8080",
+]
+api.add_middleware(
+    CORSMiddleware, allow_origins=origins,
+    allow_credentials=True, allow_methods=["*"], allow_headers=["*"],
+)
